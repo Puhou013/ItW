@@ -3,6 +3,8 @@
    ======================================== */
 
 // ===== 全局状态 =====
+let typewriterId = 0;
+
 const state = {
     cameraActive: false,
     micActive: false,
@@ -415,6 +417,9 @@ async function sendMessage() {
     const message = dom.chatInput.value.trim();
     if (!message || state.isProcessing) return;
 
+    stopTts();
+    state.ttsPausedByUser = false;
+
     var ttsCmd = checkTtsCommand(message);
     if (ttsCmd) { dom.chatInput.value = ''; updateSendButton(); return; }
 
@@ -524,12 +529,14 @@ function typewriterMessage(role, text) {
     const bubble = msgDiv.querySelector('.message-bubble');
     bubble.classList.add('typing-cursor');
 
+    const myId = ++typewriterId;
     let i = 0;
     const speed = 30 + Math.random() * 20;
     let buf = '';         // 当前累积句子
     let lastRead = 0;     // 上次已朗读到的位置
 
     function type() {
+        if (myId !== typewriterId) return;
         if (i < text.length) {
             const chunk = Math.random() < 0.08 ? text.substring(i, i + 2) : text[i];
             bubble.textContent += chunk;
@@ -646,6 +653,9 @@ function startVoiceInput() {
         showToast('您的浏览器不支持语音识别，请使用Chrome浏览器', 'error');
         return;
     }
+
+    stopTts();
+    state.ttsPausedByUser = true;
 
     state.recognition = new SpeechRecognition();
     state.recognition.lang = state.speechLang;
@@ -773,8 +783,8 @@ function speakSingleSentence(text) {
         if (female) u.voice = female;
         else { var s = zh.find(function(v){return /Xiaoxiao|晓晓|Xiaoyi|小艺|Yaoyao|瑶瑶|Xiaotong|晓彤/i.test(v.name)}); u.voice = s || zh[0]; }
     }
-    u.onend = function(){ state.ttsCurrentUtterance = null; setTimeout(speakNextInQueue, 100); };
-    u.onerror = function(){ state.ttsCurrentUtterance = null; setTimeout(speakNextInQueue, 100); };
+    u.onend = function(){ if (state.ttsCurrentUtterance !== u) return; state.ttsCurrentUtterance = null; setTimeout(speakNextInQueue, 100); };
+    u.onerror = function(){ if (state.ttsCurrentUtterance !== u) return; state.ttsCurrentUtterance = null; setTimeout(speakNextInQueue, 100); };
     state.ttsCurrentUtterance = u; state.ttsSpeaking = true;
     updateTtsButton(); speechSynthesis.speak(u);
 }
