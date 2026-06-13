@@ -818,17 +818,31 @@ function showToast(message, type = 'info') {
 }
 
 async function checkAIConfig() {
+    const el = dom.statusAI;
+    el.classList.add('checking');
+    el.querySelector('span').textContent = '检测中...';
     try {
         const response = await fetch('/api/config');
         const data = await response.json();
         if (data.features.vision || data.features.chat) {
-            dom.statusAI.classList.add('active');
+            el.classList.remove('checking', 'disconnected');
+            el.classList.add('connected');
+            el.querySelector('span').textContent = 'AI已连接';
+            el.title = 'AI已连接 - 点击重新检测';
         } else {
+            setAIDisconnected(el);
             showToast('请先配置API密钥(.env文件)', 'error');
         }
     } catch (err) {
-        // 忽略
+        setAIDisconnected(el);
     }
+}
+
+function setAIDisconnected(el) {
+    el.classList.remove('checking', 'connected');
+    el.classList.add('disconnected');
+    el.querySelector('span').textContent = 'AI未连接';
+    el.title = 'AI未连接 - 请配置API密钥后点击重试';
 }
 
 // ===== 设置持久化 =====
