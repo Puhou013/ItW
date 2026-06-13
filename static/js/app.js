@@ -76,6 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initEventListeners() {
     dom.btnToggleCamera.addEventListener('click', toggleCamera);
+    dom.statusAI.addEventListener('click', () => {
+        showToast('正在重新检测AI连接...', 'info');
+        checkAIConfig();
+    });
     dom.btnAnalyzeFrame.addEventListener('click', () => analyzeCurrentFrame());
     dom.btnSwitchCamera.addEventListener('click', switchCamera);
     dom.btnScreenshot.addEventListener('click', takeScreenshot);
