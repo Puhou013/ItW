@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI视觉精灵 - 智能视觉对话助手</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,...">
+</head>
+<body>
+    <!-- SVG图标精灵 -->
+    <svg style="display:none" aria-hidden="true">
+        <defs>
+            <symbol id="icon-robot" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><line x1="12" y1="7" x2="12" y2="3"/><line x1="7" y1="3" x2="17" y2="3"/></symbol>
+            <symbol id="icon-video" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17"/><rect x="1" y="5" width="15" height="14" rx="2"/></symbol>
+            <symbol id="icon-video-slash" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17"/><rect x="1" y="5" width="15" height="14" rx="2"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+            <symbol id="icon-mic" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></symbol>
+            <symbol id="icon-brain" viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.4 2.1-1.2 2.8l.9.9A5 5 0 0 1 13 18.5V20h-2v-1.5a5 5 0 0 1-2.7-8.8l.9-.9A3.96 3.96 0 0 1 8 6a4 4 0 0 1 4-4z"/><path d="M12 20v2"/><line x1="8" y1="22" x2="16" y2="22"/></symbol>
+            <symbol id="icon-redo" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+            <symbol id="icon-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+            <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+            <symbol id="icon-sync" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+            <symbol id="icon-camera-retro" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="16" rx="3"/><circle cx="12" cy="13" r="3"/><circle cx="6" cy="10" r="1"/><line x1="8" y1="5" x2="16" y2="5"/></symbol>
+            <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+            <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+            <symbol id="icon-comments" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+            <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+            <symbol id="icon-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+            <symbol id="icon-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+            <symbol id="icon-package" viewBox="0 0 24 24"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+            <symbol id="icon-magic" viewBox="0 0 24 24"><polyline points="7 2 5 7 0 9 5 11 7 16 9 11 14 9 9 7"/><line x1="16" y1="4" x2="20" y2="8"/><line x1="20" y1="4" x2="16" y2="8"/></symbol>
+            <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+            <symbol id="icon-lightbulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></symbol>
+            <symbol id="icon-paper-plane" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9"/></symbol>
+            <symbol id="icon-volume-up" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></symbol>
+            <symbol id="icon-volume-mute" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></symbol>
+            <symbol id="icon-times" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+            <symbol id="icon-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+            <symbol id="icon-check-circle" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+            <symbol id="icon-exclamation-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
+            <symbol id="icon-info-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+        </defs>
+    </svg>
+
+    <!-- 粒子背景 -->
+    <div class="particles-bg" id="particlesBg"></div>
+
+    <!-- 主容器 -->
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-wrapper">
+                    <div class="logo-icon">
+                        <svg class="svg-icon filled" style="font-size:20px"><use href="#icon-robot"/></svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>AI视觉精灵</h1>
+                        <span class="logo-subtitle">智能视觉对话助手</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="status-indicators">
+                    <div class="status-dot" id="statusCamera" title="摄像头状态">
+                        <svg class="svg-icon" style="font-size:10px"><use href="#icon-video"/></svg>
+                        <span class="status-label">摄像头</span>
+                    </div>
+                    <div class="status-dot" id="statusMic" title="麦克风状态">
+                        <svg class="svg-icon" style="font-size:10px"><use href="#icon-mic"/></svg>
+                        <span class="status-label">麦克风</span>
+                    </div>
+                    <div class="status-dot" id="statusAI" title="AI连接状态">
+                        <svg class="svg-icon" style="font-size:10px"><use href="#icon-brain"/></svg>
+                        <span class="status-label">AI引擎</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="btnReset" title="重置对话">
+                    <svg class="svg-icon" style="font-size:14px"><use href="#icon-redo"/></svg>
+                </button>
+                <button class="btn-icon" id="btnSettings" title="设置">
+                    <svg class="svg-icon" style="font-size:14px"><use href="#icon-cog"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主体内容 -->
+        <main class="app-main">
+            <!-- 左侧：摄像头面板 -->
+            <section class="panel camera-panel">
+                <div class="panel-header">
+                    <h2><svg class="svg-icon" style="font-size:14px;color:var(--accent-secondary)"><use href="#icon-camera"/></svg> 实时画面</h2>
+                    <div class="panel-actions">
+                        <button class="btn-sm" id="btnSwitchCamera" title="切换摄像头">
+                            <svg class="svg-icon" style="font-size:12px"><use href="#icon-sync"/></svg>
+                        </button>
+                        <button class="btn-sm" id="btnScreenshot" title="拍照分析">
+                            <svg class="svg-icon" style="font-size:12px"><use href="#icon-camera-retro"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="camera-viewport">
+                    <video id="videoElement" autoplay playsinline muted></video>
+                    <canvas id="canvasElement" style="display:none;"></canvas>
+                    <div class="camera-overlay" id="cameraOverlay">
+                        <div class="overlay-content">
+                            <svg class="svg-icon" style="font-size:48px"><use href="#icon-video-slash"/></svg>
+                            <p>点击下方按钮开启摄像头</p>
+                        </div>
+                    </div>
+                    <div class="camera-frame-indicator" id="frameIndicator">
+                        <span>AI分析中...</span>
+                    </div>
+                </div>
+                <div class="camera-controls">
+                    <button class="btn-primary" id="btnToggleCamera">
+                        <svg class="svg-icon" style="font-size:13px"><use href="#icon-video"/></svg>
+                        <span>开启摄像头</span>
+                    </button>
+                    <button class="btn-secondary" id="btnAnalyzeFrame" disabled>
+                        <svg class="svg-icon" style="font-size:13px"><use href="#icon-search"/></svg>
+                        <span>分析当前画面</span>
+                    </button>
+                    <button class="btn-secondary" id="btnRecognizeObject" disabled title="识别物体">
+                        <svg class="svg-icon" style="font-size:12px"><use href="#icon-package"/></svg>
+                        <span>物体识别</span>
+                    </button>
+                    <button class="btn-secondary" id="btnDetectEmotion" disabled title="情绪识别">
+                        <svg class="svg-icon" style="font-size:12px"><use href="#icon-smile"/></svg>
+                        <span>情绪识别</span>
+                    </button>
+                    <button class="btn-secondary" id="btnSaveScreenshot" disabled title="保存截图">
+                        <svg class="svg-icon" style="font-size:12px"><use href="#icon-download"/></svg>
+                        <span>保存</span>
+                    </button>
+                </div>
+                <div class="vision-result" id="visionResult" style="display:none;">
+                    <div class="vision-result-header">
+                        <svg class="svg-icon" style="font-size:12px"><use href="#icon-eye"/></svg>
+                        <span>画面分析结果</span>
+                    </div>
+                    <div class="vision-result-content" id="visionResultContent"></div>
+                </div>
+            </section>
+
+            <!-- 右侧：对话面板 -->
+            <section class="panel chat-panel">
+                <div class="panel-header">
+                    <h2><svg class="svg-icon" style="font-size:14px;color:var(--accent-secondary)"><use href="#icon-comments"/></svg> 智能对话</h2>
+                    <div class="panel-actions">
+                        <button class="btn-sm" id="btnAutoAnalyze" title="自动视觉分析">
+                            <svg class="svg-icon" style="font-size:12px"><use href="#icon-magic"/></svg> 自动分析
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <svg class="svg-icon filled" style="font-size:28px"><use href="#icon-robot"/></svg>
+                        </div>
+                        <h3>你好！我是AI视觉精灵</h3>
+                        <p>我可以看到你的摄像头画面，也能听到你的声音。</p>
+                        <p>试试问我："你看到了什么？" 或者描述画面中的内容让我帮你分析。</p>
+                        <div class="quick-actions">
+                            <button class="quick-btn" data-msg="你看到了什么？">
+                                <svg class="svg-icon" style="font-size:12px"><use href="#icon-eye"/></svg> 你看到了什么？
+                            </button>
+                            <button class="quick-btn" data-msg="描述一下画面中的场景">
+                                <svg class="svg-icon" style="font-size:12px"><use href="#icon-image"/></svg> 描述场景
+                            </button>
+                            <button class="quick-btn" data-msg="画面中有什么有趣的地方？">
+                                <svg class="svg-icon" style="font-size:12px"><use href="#icon-lightbulb"/></svg> 有什么有趣的？
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <div class="voice-indicator" id="voiceIndicator">
+                        <div class="voice-waves">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <span>正在聆听...</span>
+                    </div>
+                    <div class="input-wrapper">
+                        <button class="btn-mic" id="btnMic" title="语音输入">
+                            <svg class="svg-icon" style="font-size:16px"><use href="#icon-mic"/></svg>
+                        </button>
+                        <button class="btn-search-web" id="btnSearchWeb" title="联网搜索">
+                            <svg class="svg-icon" style="font-size:14px"><use href="#icon-globe"/></svg>
+                        </button>
+                        <button class="btn-search-web" id="btnTtsToggle" title="开始/停止AI朗读">
+                            <svg class="svg-icon" style="font-size:14px"><use href="#icon-volume-up"/></svg>
+                        </button>
+                        <input type="text" id="chatInput" placeholder="输入消息，或点击麦克风语音输入..." autocomplete="off">
+                        <button class="btn-send" id="btnSend" title="发送消息">
+                            <svg class="svg-icon" style="font-size:16px"><use href="#icon-paper-plane"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 设置面板 -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h3><svg class="svg-icon" style="font-size:15px"><use href="#icon-cog"/></svg> 设置</h3>
+                <button class="btn-close" id="btnCloseSettings">
+                    <svg class="svg-icon" style="font-size:14px"><use href="#icon-times"/></svg>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-group">
+                    <label>界面主题</label>
+                    <select id="settingTheme" onchange="applyTheme(this.value);saveSetting('theme',this.value)">
+                        <option value="dark">深色模式</option>
+                        <option value="light">浅色模式</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>字体大小</label>
+                    <select id="settingFontSize" onchange="applyFontSize(this.value);saveSetting('fontSize',this.value)">
+                        <option value="medium">标准</option>
+                        <option value="small">小号</option>
+                        <option value="large">大号</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>对话风格</label>
+                    <select id="settingChatStyle" onchange="state.chatStyle=this.value;saveSetting('chatStyle',this.value)">
+                        <option value="default">默认（温暖自然）</option>
+                        <option value="cute">可爱活泼</option>
+                        <option value="professional">专业严谨</option>
+                        <option value="concise">简洁高效</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>自动分析间隔</label>
+                    <select id="settingInterval">
+                        <option value="2">每2秒</option>
+                        <option value="3" selected>每3秒</option>
+                        <option value="5">每5秒</option>
+                        <option value="10">每10秒</option>
+                        <option value="0">关闭自动分析</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>语音识别语言</label>
+                    <select id="settingLang">
+                        <option value="zh-CN" selected>中文（普通话）</option>
+                        <option value="en-US">English (US)</option>
+                        <option value="ja-JP">日本語</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>AI语音音色</label>
+                    <select id="settingVoiceStyle">
+                        <option value="general" selected>通用款 - 柔和亲切</option>
+                        <option value="lively">活泼款 - 灵动轻快</option>
+                        <option value="gentle">温柔款 - 温润舒缓</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>AI模型</label>
+                    <div class="model-info">
+                        <span class="model-tag">视觉: Qwen-VL-Max</span>
+                        <span class="model-tag">对话: DeepSeek-Chat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast通知 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
