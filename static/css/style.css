@@ -142,6 +142,40 @@ body {
 }
 .status-dot.active i { animation: blink-dot 1.5s ease-in-out infinite; }
 
+.btn-ai-status {
+    display: flex; align-items: center; gap: 7px;
+    padding: 6px 16px;
+    border-radius: var(--radius-md);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; border: none;
+    transition: var(--transition);
+    color: white;
+    background: var(--gradient-1);
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+.btn-ai-status:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(108,92,231,0.5);
+}
+.btn-ai-status.checking {
+    background: linear-gradient(135deg, #ffaa00 0%, #e69900 100%);
+    box-shadow: 0 4px 15px rgba(255,170,0,0.3);
+}
+.btn-ai-status.connected {
+    background: linear-gradient(135deg, #00d68f 0%, #00b87a 100%);
+    box-shadow: 0 4px 15px rgba(0,214,143,0.3);
+}
+.btn-ai-status.connected:hover {
+    box-shadow: 0 6px 20px rgba(0,214,143,0.5);
+}
+.btn-ai-status.disconnected {
+    background: linear-gradient(135deg, #ff3d71 0%, #ff6b8a 100%);
+    box-shadow: 0 4px 15px rgba(255,61,113,0.3);
+}
+.btn-ai-status.disconnected:hover {
+    box-shadow: 0 6px 20px rgba(255,61,113,0.5);
+}
+
 @keyframes blink-dot {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
