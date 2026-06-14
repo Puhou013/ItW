@@ -16,7 +16,7 @@ const state = {
     stream: null,
     frameInterval: 3000,
     speechLang: 'zh-CN',
-    voiceStyle: 'general',
+    voiceStyle: 'warm',
     recognition: null,
     lastVisionContext: '',
     chatStyle: 'default',
@@ -946,7 +946,7 @@ function initSettings() {
     const fontSize = loadSetting('fontSize', 'medium');
     const bubble = loadSetting('bubble', 'rounded');
     const chatStyle = loadSetting('chatStyle', 'default');
-    const voiceStyle = loadSetting('voiceStyle', 'general');
+    const voiceStyle = loadSetting('voiceStyle', 'warm');
     const frameInterval = loadSetting('frameInterval', 3);
     const speechLang = loadSetting('speechLang', 'zh-CN');
     const ttsEnabled = loadSetting('ttsEnabled', 'true');
