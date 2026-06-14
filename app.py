@@ -49,8 +49,8 @@ def get_system_prompt(style: str = "default", voice_style: str = "general") -> s
     # 语音话术基调
     voice_tones = {
         "general": "用温和亲切的语气回答，说话节奏舒缓自然，语音清晰悦耳。",
-        "lively": "用轻松活泼的语气交流，语调灵动，像朋友聊天一样自然。",
-        "gentle": "请用豆包同款音色说话：年轻自然女声，语速0.92倍，音调清澈自然，语调亲切有温度，无机械感，像朋友聊天一样流畅自然。",
+        "mature": "用沉稳专业的语气回答，语调平稳有力，语言简练不拖沓，体现可靠和信赖感。",
+        "warm": "用温暖治愈的语气回答，语调轻柔有温度，像冬日暖阳般让人感到舒适和被关怀。",
     }
     voice_tone = voice_tones.get(voice_style, voice_tones["general"])
     base = (

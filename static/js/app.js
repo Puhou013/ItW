@@ -801,22 +801,16 @@ function findVoice(langPrefix, namePatterns, fallbackPatterns) {
 var voiceProfiles = {
     zh: {
         general:  {rate:0.95, pitch:1.00, names:['Xiaoxiao','晓晓','Xiaoyi','小艺'], fallback:['female','Female','女士']},
-        lively:   {rate:1.05, pitch:1.10, names:['Xiaoxiao','晓晓','Xiaoyi','小艺'], fallback:['female','Female']},
-        gentle:   {rate:0.88, pitch:1.03, names:['Xiaoxiao','晓晓','Yaoyao','瑶瑶'], fallback:['female','Female']},
         mature:   {rate:0.93, pitch:0.95, names:['Yunxi','云希','Xiaohan','晓涵'], fallback:['female','Female']},
         warm:     {rate:0.90, pitch:1.02, names:['Xiaohan','晓涵','Xiaoxiao','晓晓'], fallback:['female','Female']}
     },
     en: {
         general:  {rate:0.95, pitch:1.00, names:['Samantha','Karen','Google US English'], fallback:['female','Female']},
-        lively:   {rate:1.08, pitch:1.12, names:['Samantha','Karen'], fallback:['female']},
-        gentle:   {rate:0.88, pitch:1.03, names:['Samantha','Karen'], fallback:['female']},
         mature:   {rate:0.93, pitch:0.95, names:['Susan','Google UK English Female'], fallback:['female']},
         warm:     {rate:0.90, pitch:1.02, names:['Samantha','Moira'], fallback:['female']}
     },
     ja: {
         general:  {rate:0.95, pitch:1.00, names:['Kyoko','Google 日本語'], fallback:['female']},
-        lively:   {rate:1.05, pitch:1.10, names:['Kyoko'], fallback:['female']},
-        gentle:   {rate:0.88, pitch:1.03, names:['Kyoko'], fallback:['female']},
         mature:   {rate:0.93, pitch:0.95, names:['Kyoko'], fallback:['female']},
         warm:     {rate:0.90, pitch:1.02, names:['Kyoko'], fallback:['female']}
     }
