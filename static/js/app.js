@@ -482,6 +482,9 @@ async function sendMessage() {
             }
             if (data.search_used) {
                 showToast('已结合联网搜索结果回答', 'info');
+                if (data.search_context) {
+                    addSearchContextToChat(data.search_context);
+                }
             }
         } else {
             addMessage('assistant', '抱歉，我遇到了一些问题：' + (data.error || '未知错误'));
@@ -522,6 +525,26 @@ function addMessage(role, text) {
     dom.chatMessages.appendChild(msgDiv);
     dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
     return msgDiv;
+}
+
+function addSearchContextToChat(searchContext) {
+    var existing = dom.chatMessages.querySelector('.message.search-context');
+    if (existing) existing.remove();
+    var ctxDiv = document.createElement('div');
+    ctxDiv.className = 'message search-context';
+    ctxDiv.innerHTML = '<div class="search-badge"><svg class="svg-icon" style="font-size:12px"><use href="#icon-globe"/></svg> 联网搜索参考</div>' +
+        '<div class="search-detail">' + escapeHtml(searchContext).replace(/\n/g, '<br>') + '</div>';
+    ctxDiv.querySelector('.search-badge').addEventListener('click', function() {
+        ctxDiv.classList.toggle('expanded');
+    });
+    dom.chatMessages.appendChild(ctxDiv);
+    dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
+}
+
+function escapeHtml(text) {
+    var d = document.createElement('div');
+    d.textContent = text;
+    return d.innerHTML;
 }
 
 function typewriterMessage(role, text) {
@@ -624,18 +647,23 @@ async function resetConversation() {
 }
 
 // ===== 联网搜索 =====
-function toggleSearch() {
-    state.searchEnabled = !state.searchEnabled;
+function updateSearchButton() {
     const btn = dom.btnSearchWeb;
+    if (!btn) return;
     if (state.searchEnabled) {
         btn.classList.add('active');
         btn.title = '已开启联网搜索';
-        showToast('联网搜索已开启 - AI将结合实时网络信息回答', 'info');
     } else {
         btn.classList.remove('active');
-        btn.title = '联网搜索';
-        showToast('联网搜索已关闭', 'info');
+        btn.title = '开启联网搜索';
     }
+}
+
+function toggleSearch() {
+    state.searchEnabled = !state.searchEnabled;
+    saveSetting('searchEnabled', state.searchEnabled);
+    updateSearchButton();
+    showToast(state.searchEnabled ? '联网搜索已开启 - AI将结合实时网络信息回答' : '联网搜索已关闭', 'info');
 }
 
 // ===== 语音输入 =====
@@ -950,6 +978,9 @@ function initSettings() {
     const frameInterval = loadSetting('frameInterval', 3);
     const speechLang = loadSetting('speechLang', 'zh-CN');
     const ttsEnabled = loadSetting('ttsEnabled', 'true');
+    const searchEnabled = loadSetting('searchEnabled', 'false');
+    state.searchEnabled = searchEnabled === 'true' || searchEnabled === true;
+    updateSearchButton();
 
     applyTheme(theme);
     applyFontSize(fontSize);

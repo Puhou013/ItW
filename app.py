@@ -34,6 +34,8 @@ FRAME_INTERVAL = 3.0
 JPEG_QUALITY = 60
 MAX_IMAGE_SIZE = (640, 480)
 MAX_SEARCH_RESULTS = 5
+SEARCH_TIMEOUT = 8
+SEARCH_RETRY = 1
 
 
 def get_time_context() -> str:
@@ -134,44 +136,46 @@ def get_vision_prompt(mode: str = "general") -> str:
     return prompts.get(mode, prompts["general"])
 
 
-def web_search(query: str, max_results: int = None) -> str:
-    """DuckDuckGo免费搜索"""
-    if max_results is None:
-        max_results = MAX_SEARCH_RESULTS
-    try:
-        results = list(ddgs.text(query, max_results=max_results, timelimit='y'))
-        if not results:
-            return ""
-        snippets = []
-        for i, r in enumerate(results, 1):
-            title = r.get('title', '')
-            body = r.get('body', '')
-            href = r.get('href', '')
-            snippets.append(f"[{i}] {title}\n    {body}\n    来源: {href}")
-        return "\n\n".join(snippets)
-    except Exception as e:
-        logger.warning(f"[Search] 搜索失败: {e}")
-        return ""
-MAX_SEARCH_RESULTS = 5
-SEARCH_TIMEOUT = 8
-
-
 def web_search(query: str, max_results: int = MAX_SEARCH_RESULTS) -> str:
-    """DuckDuckGo免费搜索"""
-    try:
-        results = list(ddgs.text(query, max_results=max_results, timelimit='y'))
-        if not results:
-            return ""
-        snippets = []
-        for i, r in enumerate(results, 1):
-            title = r.get('title', '')
-            body = r.get('body', '')
-            href = r.get('href', '')
-            snippets.append(f"[{i}] {title}\n    {body}\n    来源: {href}")
-        return "\n\n".join(snippets)
-    except Exception as e:
-        logger.warning(f"[Search] 搜索失败: {e}")
+    """DuckDuckGo免费搜索，含超时与重试"""
+    import concurrent.futures
+    for attempt in range(SEARCH_RETRY + 1):
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(_do_search, query, max_results)
+                result = future.result(timeout=SEARCH_TIMEOUT)
+                if result:
+                    return result
+        except concurrent.futures.TimeoutError:
+            logger.warning(f"[Search] 搜索超时 (attempt {attempt+1})")
+        except Exception as e:
+            logger.warning(f"[Search] 搜索失败 (attempt {attempt+1}): {e}")
+        if attempt < SEARCH_RETRY:
+            import time
+            time.sleep(0.5)
+    return ""
+
+
+def _do_search(query: str, max_results: int) -> str:
+    """执行实际搜索并格式化结果"""
+    results = list(ddgs.text(query, max_results=max_results))
+    if not results:
         return ""
+    seen = set()
+    snippets = []
+    idx = 0
+    for r in results:
+        title = r.get('title', '').strip()
+        body = r.get('body', '').strip()
+        href = r.get('href', '').strip()
+        key = (title[:30] if title else body[:30])
+        if key in seen:
+            continue
+        seen.add(key)
+        idx += 1
+        body_short = body[:200] + ('...' if len(body) > 200 else '')
+        snippets.append(f"[{idx}] {title}\n    {body_short}\n    来源: {href}")
+    return "\n\n".join(snippets)
 
 
 @app.route('/')
@@ -255,13 +259,14 @@ def chat():
                 "content": f"[当前摄像头画面分析结果]\n{vision_context}\n请结合以上画面内容回答用户问题。"
             })
 
+        search_context = ""
         if enable_search and message:
             logger.info(f"[Chat] 联网搜索中...")
-            search_ctx = web_search(message)
-            if search_ctx:
+            search_context = web_search(message)
+            if search_context:
                 messages.append({
                     "role": "system",
-                    "content": f"[联网搜索结果]\n{search_ctx}\n请结合以上搜索结果回答，标注来源编号如[1]。"
+                    "content": f"[联网搜索结果]\n{search_context}\n请结合以上搜索结果回答，标注来源编号如[1]。"
                 })
 
         for h in history[-MAX_HISTORY:]:
@@ -286,7 +291,11 @@ def chat():
         if len(history) > MAX_HISTORY * 2:
             CONVERSATION_HISTORY[session_id] = history[-(MAX_HISTORY * 2):]
 
-        return jsonify({'success': True, 'reply': reply})
+        result = {'success': True, 'reply': reply}
+        if search_context:
+            result['search_used'] = True
+            result['search_context'] = search_context
+        return jsonify(result)
 
     except Exception as e:
         logger.error(f"[Chat] 异常: {str(e)}")

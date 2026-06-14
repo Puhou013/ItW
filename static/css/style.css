@@ -495,6 +495,29 @@ body {
     animation: blink-dot 1.5s ease-in-out infinite;
 }
 
+/* 搜索结果展示 */
+.message.search-context {
+    margin: 4px 0 12px; padding: 0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+.search-badge {
+    padding: 6px 12px; font-size: 11px; color: var(--accent-secondary);
+    cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 6px;
+}
+.search-badge:hover { background: var(--bg-hover); }
+.search-detail {
+    display: none; padding: 8px 12px 12px;
+    font-size: 11px; color: var(--text-muted); line-height: 1.6;
+    border-top: 1px solid var(--border-color);
+    max-height: 200px; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-all;
+}
+.search-context.expanded .search-detail { display: block; }
+
 /* Switch 开关 */
 .switch { position: relative; display: inline-block; width: 44px; height: 24px; margin-left: auto; }
 .switch input { opacity: 0; width: 0; height: 0; }
