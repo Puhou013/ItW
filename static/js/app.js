@@ -769,20 +769,78 @@ function speakNextInQueue() {
     speakSingleSentence(state.ttsQueue.shift());
 }
 
+// 语音缓存：预加载并缓存系统语音列表
+var cachedVoices = [];
+var voicesReady = false;
+
+function ensureVoicesLoaded() {
+    if (voicesReady && cachedVoices.length) return cachedVoices;
+    cachedVoices = speechSynthesis.getVoices();
+    if (cachedVoices.length) voicesReady = true;
+    return cachedVoices;
+}
+
+function findVoice(langPrefix, namePatterns, fallbackPatterns) {
+    var voices = ensureVoicesLoaded();
+    var langVoices = voices.filter(function(v){return v.lang.indexOf(langPrefix)===0});
+    if (!langVoices.length) return null;
+    for (var i = 0; i < namePatterns.length; i++) {
+        var m = langVoices.find(function(v){return v.name.indexOf(namePatterns[i])!==-1});
+        if (m) return m;
+    }
+    if (fallbackPatterns) {
+        for (var j = 0; j < fallbackPatterns.length; j++) {
+            var f = langVoices.find(function(v){return v.name.indexOf(fallbackPatterns[j])!==-1});
+            if (f) return f;
+        }
+    }
+    return langVoices[0];
+}
+
+// 音色配置：rate/pitch 参数 + 精确语音匹配链
+var voiceProfiles = {
+    zh: {
+        general:  {rate:0.95, pitch:1.00, names:['Xiaoxiao','晓晓','Xiaoyi','小艺'], fallback:['female','Female','女士']},
+        lively:   {rate:1.05, pitch:1.10, names:['Xiaoxiao','晓晓','Xiaoyi','小艺'], fallback:['female','Female']},
+        gentle:   {rate:0.88, pitch:1.03, names:['Xiaoxiao','晓晓','Yaoyao','瑶瑶'], fallback:['female','Female']},
+        mature:   {rate:0.93, pitch:0.95, names:['Yunxi','云希','Xiaohan','晓涵'], fallback:['female','Female']},
+        warm:     {rate:0.90, pitch:1.02, names:['Xiaohan','晓涵','Xiaoxiao','晓晓'], fallback:['female','Female']}
+    },
+    en: {
+        general:  {rate:0.95, pitch:1.00, names:['Samantha','Karen','Google US English'], fallback:['female','Female']},
+        lively:   {rate:1.08, pitch:1.12, names:['Samantha','Karen'], fallback:['female']},
+        gentle:   {rate:0.88, pitch:1.03, names:['Samantha','Karen'], fallback:['female']},
+        mature:   {rate:0.93, pitch:0.95, names:['Susan','Google UK English Female'], fallback:['female']},
+        warm:     {rate:0.90, pitch:1.02, names:['Samantha','Moira'], fallback:['female']}
+    },
+    ja: {
+        general:  {rate:0.95, pitch:1.00, names:['Kyoko','Google 日本語'], fallback:['female']},
+        lively:   {rate:1.05, pitch:1.10, names:['Kyoko'], fallback:['female']},
+        gentle:   {rate:0.88, pitch:1.03, names:['Kyoko'], fallback:['female']},
+        mature:   {rate:0.93, pitch:0.95, names:['Kyoko'], fallback:['female']},
+        warm:     {rate:0.90, pitch:1.02, names:['Kyoko'], fallback:['female']}
+    }
+};
+
+function getVoiceProfile() {
+    var langKey = 'zh';
+    if (state.speechLang === 'en-US') langKey = 'en';
+    else if (state.speechLang === 'ja-JP') langKey = 'ja';
+    var profiles = voiceProfiles[langKey] || voiceProfiles.zh;
+    return profiles[state.voiceStyle] || profiles.general;
+}
+
 function speakSingleSentence(text) {
     if (!window.speechSynthesis || !text) { setTimeout(speakNextInQueue, 50); return; }
     var u = new SpeechSynthesisUtterance(text);
-    u.lang = 'zh-CN'; u.volume = 0.9;
-    var styles = { general:{rate:0.90,pitch:1.02}, lively:{rate:1.08,pitch:1.12}, gentle:{rate:0.92,pitch:1.08} };
-    var vs = styles[state.voiceStyle] || styles.general;
-    u.rate = vs.rate; u.pitch = vs.pitch;
-    var voices = speechSynthesis.getVoices();
-    var zh = voices.filter(function(v){return v.lang.indexOf('zh')===0});
-    if (zh.length) {
-        var female = zh.find(function(v){return /female|woman|girl|女士|女|Tingting|Xiaoxiao|Yaoyao/i.test(v.name)});
-        if (female) u.voice = female;
-        else { var s = zh.find(function(v){return /Xiaoxiao|晓晓|Xiaoyi|小艺|Yaoyao|瑶瑶|Xiaotong|晓彤/i.test(v.name)}); u.voice = s || zh[0]; }
-    }
+    u.lang = state.speechLang || 'zh-CN';
+    u.volume = 0.9;
+    var profile = getVoiceProfile();
+    u.rate = profile.rate;
+    u.pitch = profile.pitch;
+    var langPrefix = (state.speechLang || 'zh-CN').split('-')[0];
+    var voice = findVoice(langPrefix, profile.names, profile.fallback);
+    if (voice) u.voice = voice;
     u.onend = function(){ if (state.ttsCurrentUtterance !== u) return; state.ttsCurrentUtterance = null; setTimeout(speakNextInQueue, 100); };
     u.onerror = function(){ if (state.ttsCurrentUtterance !== u) return; state.ttsCurrentUtterance = null; setTimeout(speakNextInQueue, 100); };
     state.ttsCurrentUtterance = u; state.ttsSpeaking = true;
@@ -805,10 +863,14 @@ function speakStreamingText(text) {
     if (!state.ttsSpeaking) speakNextInQueue();
 }
 
-// 预加载语音列表
+// 预加载语音列表（异步加载，确保 onvoiceschanged 后刷新缓存）
 if (window.speechSynthesis) {
-    speechSynthesis.getVoices();
-    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+    cachedVoices = speechSynthesis.getVoices();
+    if (cachedVoices.length) voicesReady = true;
+    speechSynthesis.onvoiceschanged = function() {
+        cachedVoices = speechSynthesis.getVoices();
+        voicesReady = true;
+    };
 }
 
 // ===== UI工具 =====
