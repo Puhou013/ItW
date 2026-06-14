@@ -852,9 +852,15 @@ function getVoiceProfile() {
     return profiles[state.voiceStyle] || profiles.general;
 }
 
+function stripPunctuation(text) {
+    return text.replace(/[，。！？：；、""''（）《》【】…—～·,.!?;:;"'()\[\]<>#@$%^&*+=/\\|`~]/g, '');
+}
+
 function speakSingleSentence(text) {
     if (!window.speechSynthesis || !text) { setTimeout(speakNextInQueue, 50); return; }
-    var u = new SpeechSynthesisUtterance(text);
+    var clean = stripPunctuation(text).trim();
+    if (!clean) { setTimeout(speakNextInQueue, 50); return; }
+    var u = new SpeechSynthesisUtterance(clean);
     u.lang = state.speechLang || 'zh-CN';
     u.volume = 0.9;
     var profile = getVoiceProfile();
